@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GaiCodeMaster AI - Vertical Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #8fafc;
+            width: 480px;
+            height: 1000px;
+            overflow: hidden;
+        }
+        
+        .vertical-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            gap: 10px;
+        }
+        
+        /* Ultra Compact Header */
+        .micro-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .micro-logo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .micro-logo i {
+            font-size: 16px;
+            color: #3b82f6;
+        }
+        
+        .micro-logo h1 {
+            font-size: 14px;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .micro-status {
+            font-size: 10px;
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .status-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background-color: #10b981;
+            animation: pulse 2s infinite;
+        }
+        
+        /* Tab System */
+        .vertical-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 5px;
+            gap: 5px;
+        }
+        
+        .vertical-tab {
+            flex: 1;
+            padding: 8px 5px;
+            background: rgba(255, 255, 255, 0.07);
+            border: none;
+            border-radius: 6px;
+            color: #cbd5e1;
+            font-size: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+        
+        .vertical-tab.active {
+            background: rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
+        }
+        
+        .vertical-tab i {
+            font-size: 12px;
+        }
+        
+        /* Content Areas */
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow: hidden;
+        }
+        
+        /* Tools Panel (collapsible) */
+        .tools-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            max-height: 50px;
+        }
+        
+        .tools-section.expanded {
+            max-height: 300px;
+        }
+        
+        .section-header {
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(59, 130, 246, 0.1);
+            cursor: pointer;
+        }
+        
+        .section-title {
+            font-size: 12px;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .toggle-btn {
+            width: 20px;
+            height: 20px;
+            background: rgba(59, 130, 246, 0.2);
+            border: none;
+            border-radius: 4px;
+            color: #60a5fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .section-content {
+            padding: 10px;
+            display: none;
+        }
+        
+        .tools-section.expanded .section-content {
+            display: block;
+        }
+        
+        /* Language Grid */
+        .lang-grid-vertical {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .lang-pill {
+            padding: 6px 4px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #cbd5e1;
+            font-size: 9px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .lang-pill:hover, .lang-pill.active {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+        
+        /* Quick Tools */
+        .quick-tools {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+        
+        .tool-btn-micro {
+            padding: 8px 5px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 6px;
+            color: #60a5fa;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+        
+        .tool-btn-micro:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+        
+        .tool-btn-micro i {
+            font-size: 12px;
+        }
+        
+        /* Chat Area */
+        .chat-section {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            padding: 10px;
+            background: rgba(59, 130, 246, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-title {
+            font-size: 12px;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .chat-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .chat-action-btn {
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .chat-action-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 3px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 2px;
+        }
+        
+        .message-micro {
+            max-width: 90%;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            line-height: 1.3;
+        }
+        
+        .user-message {
+            align-self: flex-end;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        }
+        
+        .ai-message {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .message-sender-micro {
+            font-size: 9px;
+            opacity: 0.8;
+            margin-bottom: 3px;
+            font-weight: bold;
+        }
+        
+        .message-time-micro {
+            font-size: 8px;
+            opacity: 0.6;
+            margin-top: 3px;
+            text-align: right;
+        }
+        
+        /* Code blocks in chat */
+        .code-micro {
+            background: #1e1e1e;
+            border-radius: 4px;
+            padding: 6px;
+            margin: 5px 0;
+            overflow-x: auto;
+        }
+        
+        pre {
+            margin: 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 10px;
+            line-height: 1.2;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1px 3px;
+            border-radius: 2px;
+            font-size: 9px;
+        }
+        
+        /* Input Area */
+        .input-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 10px;
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .chat-input-micro {
+            flex: 1;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 11px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .chat-input-micro:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .send-btn-micro {
+            width: 36px;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .send-btn-micro:hover {
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+        }
+        
+        .code-input-toggle {
+            width: 100%;
+            padding: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #94a3b8;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .code-input-area {
+            margin-top: 8px;
+            display: none;
+        }
+        
+        .code-input-area.visible {
+            display: block;
+        }
+        
+        .code-textarea-micro {
+            width: 100%;
+            height: 80px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #fff;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 10px;
+            resize: vertical;
+        }
+        
+        /* Model Selector */
+        .model-selector-micro {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 5px;
+            gap: 5px;
+        }
+        
+        .model-btn-micro {
+            flex: 1;
+            padding: 6px 4px;
+            background: rgba(255, 255, 255, 0.07);
+            border: none;
+            border-radius: 6px;
+            color: #cbd5e1;
+            font-size: 9px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .model-btn-micro.active {
+            background: rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
+        }
+        
+        /* Typing indicator */
+        .typing-micro {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            padding: 6px 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            width: fit-content;
+            align-self: flex-start;
+        }
+        
+        .typing-dot-micro {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: #60a5fa;
+            animation: typing 1.5s infinite ease-in-out;
+        }
+        
+        .typing-dot-micro:nth-child(1) { animation-delay: 0s; }
+        .typing-dot-micro:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot-micro:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="vertical-container">
+        <!-- Header -->
+        <div class="micro-header">
+            <div class="micro-logo">
+                <i class="fas fa-code"></i>
+                <h1>GaiCodeMaster AI|PREPARED BY TEWODROS STUDIO</h1>
+            </div>
+            <div class="micro-status">
+                <div class="status-dot"></div>
+                <span>Connected</span>
+            </div>
+        </div>
+        
+        <!-- Main Tabs -->
+        <div class="vertical-tabs">
+            <button class="vertical-tab active" data-tab="chat">
+                <i class="fas fa-comments"></i>
+                <span>Chat</span>
+            </button>
+            <button class="vertical-tab" data-tab="code">
+                <i class="fas fa-code"></i>
+                <span>Code</span>
+            </button>
+            <button class="vertical-tab" data-tab="tools">
+                <i class="fas fa-tools"></i>
+                <span>Tools</span>
+            </button>
+        </div>
+        
+        <!-- Model Selector -->
+        <div class="model-selector-micro">
+            <button class="model-btn-micro active" data-model="gpt-3.5-turbo">GPT-3.5</button>
+            <button class="model-btn-micro" data-model="gpt-4">GPT-4</button>
+            <button class="model-btn-micro" data-model="gpt-4-turbo">Turbo</button>
+        </div>
+        
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Tools Section (Collapsible) -->
+            <div class="tools-section" id="toolsSection">
+                <div class="section-header" id="toolsToggle">
+                    <div class="section-title">
+                        <i class="fas fa-code-branch"></i>
+                        <span>Programming Languages</span>
+                    </div>
+                    <button class="toggle-btn">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="section-content">
+                    <div class="lang-grid-vertical" id="languageGrid">
+                        <!-- Languages will be populated -->
+                    </div>
+                    <div class="quick-tools" id="quickTools">
+                        <!-- Tools will be populated -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Section -->
+            <div class="chat-section">
+                <div class="chat-header">
+                    <div class="chat-title">
+                        <i class="fas fa-robot"></i>
+                        <span>AI Assistant</span>
+                    </div>
+                    <div class="chat-actions">
+                        <button class="chat-action-btn" id="newChatBtn" title="New Chat">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button class="chat-action-btn" id="clearChatBtn" title="Clear Chat">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Messages will appear here -->
+                    <div class="message-micro ai-message">
+                        <div class="message-sender-micro">GaiCodeMaster AI</div>
+                        <p>🚀 Welcome to GaiCodeMaster AI!</p>
+                        <p>I'm your coding assistant. Select a language and use the tools below.</p>
+                        <div class="message-time-micro" id="welcomeTime"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="input-row">
+                    <input type="text" class="chat-input-micro" id="messageInput" placeholder="Ask coding question..." autocomplete="off">
+                    <button class="send-btn-micro" id="sendButton">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <button class="code-input-toggle" id="codeToggleBtn">
+                    <i class="fas fa-code"></i>
+                    <span>Add Code</span>
+                </button>
+                <div class="code-input-area" id="codeInputArea">
+                    <textarea class="code-textarea-micro" id="codeInput" placeholder="Paste your code here..."></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === SECURITY WARNING ===
+        // Your API key is hardcoded - VERY DANGEROUS!
+        // Anyone who gets this file can steal your key!
+        const PROVIDED_API_KEY = "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";
+        
+        // App state
+        let apiKey = PROVIDED_API_KEY;
+        let currentModel = 'gpt-3.5-turbo';
+        let currentLanguage = 'javascript';
+        let chatHistory = [];
+        let currentChatId = null;
+        let isProcessing = false;
+        let isCodeInputVisible = false;
+        
+        // Popular languages for vertical layout
+        const languages = [
+            'JS', 'Python', 'Java', 'C++', 'C#', 'PHP', 'Ruby',
+            'TS', 'Go', 'Rust', 'Swift', 'Kotlin', 'R', 'SQL',
+            'HTML', 'CSS', 'Bash', 'Dart', 'Scala', 'Perl'
+        ];
+        
+        const languageMap = {
+            'JS': 'javascript', 'Python': 'python', 'Java': 'java', 'C++': 'cpp',
+            'C#': 'csharp', 'PHP': 'php', 'Ruby': 'ruby', 'TS': 'typescript',
+            'Go': 'go', 'Rust': 'rust', 'Swift': 'swift', 'Kotlin': 'kotlin',
+            'R': 'r', 'SQL': 'sql', 'HTML': 'html', 'CSS': 'css',
+            'Bash': 'bash', 'Dart': 'dart', 'Scala': 'scala', 'Perl': 'perl'
+        };
+        
+        // Tools
+        const tools = [
+            { icon: 'fa-question-circle', label: 'Explain', id: 'explain' },
+            { icon: 'fa-bug', label: 'Debug', id: 'debug' },
+            { icon: 'fa-tachometer-alt', label: 'Optimize', id: 'optimize' },
+            { icon: 'fa-exchange-alt', label: 'Convert', id: 'convert' },
+            { icon: 'fa-plus', label: 'Generate', id: 'generate' },
+            { icon: 'fa-vial', label: 'Test', id: 'test' },
+            { icon: 'fa-file-alt', label: 'Document', id: 'document' },
+            { icon: 'fa-redo', label: 'Refactor', id: 'refactor' }
+        ];
+        
+        // DOM Elements
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const newChatBtn = document.getElementById('newChatBtn');
+        const clearChatBtn = document.getElementById('clearChatBtn');
+        const codeToggleBtn = document.getElementById('codeToggleBtn');
+        const codeInputArea = document.getElementById('codeInputArea');
+        const codeInput = document.getElementById('codeInput');
+        const toolsToggle = document.getElementById('toolsToggle');
+        const toolsSection = document.getElementById('toolsSection');
+        const languageGrid = document.getElementById('languageGrid');
+        const quickTools = document.getElementById('quickTools');
+        const modelButtons = document.querySelectorAll('.model-btn-micro');
+        const verticalTabs = document.querySelectorAll('.vertical-tab');
+        
+        // Initialize app
+        function initApp() {
+            // Set welcome time
+            const welcomeTime = document.getElementById('welcomeTime');
+            if (welcomeTime) {
+                welcomeTime.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            }
+            
+            // Initialize with API key
+            localStorage.setItem('aiChatApiKey', PROVIDED_API_KEY);
+            
+            // Initialize UI components
+            initLanguageGrid();
+            initQuickTools();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Load chat history
+            const savedHistory = localStorage.getItem('verticalChatHistory');
+            if (savedHistory) {
+                chatHistory = JSON.parse(savedHistory);
+            }
+            
+            // Start new chat
+            startNewChat();
+        }
+        
+        // Initialize language grid
+        function initLanguageGrid() {
+            languageGrid.innerHTML = '';
+            languages.forEach(lang => {
+                const pill = document.createElement('div');
+                pill.className = `lang-pill ${lang === 'JS' ? 'active' : ''}`;
+                pill.textContent = lang;
+                pill.dataset.lang = languageMap[lang];
+                pill.title = languageMap[lang];
+                pill.addEventListener('click', () => selectLanguage(languageMap[lang]));
+                languageGrid.appendChild(pill);
+            });
+        }
+        
+        // Initialize quick tools
+        function initQuickTools() {
+            quickTools.innerHTML = '';
+            tools.forEach(tool => {
+                const btn = document.createElement('button');
+                btn.className = 'tool-btn-micro';
+                btn.dataset.tool = tool.id;
+                btn.innerHTML = `
+                    <i class="fas ${tool.icon}"></i>
+                    <span>${tool.label}</span>
+                `;
+                btn.addEventListener('click', () => handleToolClick(tool.id));
+                quickTools.appendChild(btn);
+            });
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Message input
+            sendButton.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !isProcessing) sendMessage();
+            });
+            
+            // Chat actions
+            newChatBtn.addEventListener('click', startNewChat);
+            clearChatBtn.addEventListener('click', clearCurrentChat);
+            
+            // Code input toggle
+            codeToggleBtn.addEventListener('click', () => {
+                isCodeInputVisible = !isCodeInputVisible;
+                if (isCodeInputVisible) {
+                    codeInputArea.classList.add('visible');
+                    codeToggleBtn.innerHTML = '<i class="fas fa-times"></i><span>Hide Code</span>';
+                    codeInput.focus();
+                } else {
+                    codeInputArea.classList.remove('visible');
+                    codeToggleBtn.innerHTML = '<i class="fas fa-code"></i><span>Add Code</span>';
+                }
+            });
+            
+            // Tools toggle
+            toolsToggle.addEventListener('click', () => {
+                toolsSection.classList.toggle('expanded');
+                const icon = toolsToggle.querySelector('i');
+                if (toolsSection.classList.contains('expanded')) {
+                    icon.className = 'fas fa-chevron-up';
+                } else {
+                    icon.className = 'fas fa-chevron-down';
+                }
+            });
+            
+            // Model selection
+            modelButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    modelButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentModel = this.dataset.model;
+                    addSystemMessage(`Switched to ${this.textContent}`);
+                });
+            });
+            
+            // Tab switching
+            verticalTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    verticalTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    const tabName = this.dataset.tab;
+                    // Tab switching logic can be added here
+                });
+            });
+        }
+        
+        // Select language
+        function selectLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update active state
+            document.querySelectorAll('.lang-pill').forEach(pill => {
+                const pillLang = languageMap[pill.textContent];
+                pill.classList.toggle('active', pillLang === lang);
+            });
+            
+            addSystemMessage(`Selected: ${lang}`);
+        }
+        
+        // Handle tool click
+        function handleToolClick(tool) {
+            const userCode = codeInput.value.trim();
+            let prompt = '';
+            
+            switch(tool) {
+                case 'explain': prompt = userCode ? `Explain:\n${userCode}` : 'Explain code:'; break;
+                case 'debug': prompt = userCode ? `Debug:\n${userCode}` : 'Debug code:'; break;
+                case 'optimize': prompt = userCode ? `Optimize:\n${userCode}` : 'Optimize code:'; break;
+                case 'convert': prompt = userCode ? `Convert to ${currentLanguage}:\n${userCode}` : `Convert to ${currentLanguage}:`; break;
+                case 'generate': prompt = `Generate ${currentLanguage} code:`; break;
+                case 'test': prompt = userCode ? `Write tests:\n${userCode}` : 'Write tests:'; break;
+                case 'document': prompt = userCode ? `Document:\n${userCode}` : 'Document code:'; break;
+                case 'refactor': prompt = userCode ? `Refactor:\n${userCode}` : 'Refactor code:'; break;
+            }
+            
+            if (userCode || tool === 'generate') {
+                messageInput.value = prompt;
+                sendMessage();
+                if (userCode) {
+                    codeInput.value = '';
+                    codeInputArea.classList.remove('visible');
+                    codeToggleBtn.innerHTML = '<i class="fas fa-code"></i><span>Add Code</span>';
+                    isCodeInputVisible = false;
+                }
+            } else {
+                messageInput.value = prompt;
+                messageInput.focus();
+                addSystemMessage('Complete the prompt above');
+            }
+        }
+        
+        // Start new chat
+        function startNewChat() {
+            currentChatId = Date.now().toString();
+            
+            const newChat = {
+                id: currentChatId,
+                title: 'New Chat',
+                timestamp: new Date().toISOString(),
+                model: currentModel,
+                language: currentLanguage,
+                messages: []
+            };
+            
+            chatHistory.unshift(newChat);
+            saveChatHistory();
+            renderChat();
+            
+            messageInput.value = '';
+            messageInput.focus();
+        }
+        
+        // Clear current chat
+        function clearCurrentChat() {
+            const currentChatIndex = chatHistory.findIndex(chat => chat.id === currentChatId);
+            if (currentChatIndex !== -1) {
+                chatHistory[currentChatIndex].messages = [];
+                saveChatHistory();
+                renderChat();
+                addSystemMessage('Chat cleared');
+            }
+        }
+        
+        // Send message
+        async function sendMessage() {
+            const messageText = messageInput.value.trim();
+            
+            if (!messageText || isProcessing || !apiKey) return;
+            
+            isProcessing = true;
+            sendButton.disabled = true;
+            messageInput.disabled = true;
+            
+            // Add user message
+            const userMessage = {
+                sender: 'user',
+                text: messageText,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Update chat history
+            const currentChatIndex = chatHistory.findIndex(chat => chat.id === currentChatId);
+            if (currentChatIndex !== -1) {
+                chatHistory[currentChatIndex].messages.push(userMessage);
+                
+                // Update title if first message
+                if (chatHistory[currentChatIndex].title === 'New Chat') {
+                    const shortMessage = messageText.length > 15 ? 
+                        messageText.substring(0, 15) + '...' : messageText;
+                    chatHistory[currentChatIndex].title = shortMessage;
+                }
+            }
+            
+            // Clear and render
+            messageInput.value = '';
+            renderChat();
+            showTypingIndicator();
+            
+            // Get AI response
+            try {
+                const aiResponse = await generateAIResponse(messageText);
+                
+                const aiMessage = {
+                    sender: 'ai',
+                    text: aiResponse,
+                    timestamp: new Date().toISOString()
+                };
+                
+                if (currentChatIndex !== -1) {
+                    chatHistory[currentChatIndex].messages.push(aiMessage);
+                }
+                
+                saveChatHistory();
+                renderChat();
+            } catch (error) {
+                console.error('AI Error:', error);
+                const errorMessage = {
+                    sender: 'ai',
+                    text: `Error: ${error.message}`,
+                    timestamp: new Date().toISOString()
+                };
+                
+                if (currentChatIndex !== -1) {
+                    chatHistory[currentChatIndex].messages.push(errorMessage);
+                }
+                
+                renderChat();
+                saveChatHistory();
+            } finally {
+                removeTypingIndicator();
+                isProcessing = false;
+                sendButton.disabled = false;
+                messageInput.disabled = false;
+                messageInput.focus();
+            }
+        }
+        
+        // Generate AI response
+        async function generateAIResponse(userMessage) {
+            const systemMessage = {
+                role: "system",
+                content: `You are GaiCodeMaster AI, a vertical coding assistant. Be concise. Use markdown code blocks. Language: ${currentLanguage}`
+            };
+            
+            const messages = [systemMessage, { role: "user", content: userMessage }];
+            
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: currentModel,
+                    messages: messages,
+                    temperature: 0.7,
+                    max_tokens: 1000
+                })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error?.message || `API error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data.choices[0].message.content;
+        }
+        
+        // Render chat
+        function renderChat() {
+            chatMessages.innerHTML = '';
+            
+            const currentChat = chatHistory.find(chat => chat.id === currentChatId);
+            
+            if (currentChat && currentChat.messages.length > 0) {
+                currentChat.messages.forEach(message => {
+                    addMessage(message.sender, message.text, message.timestamp);
+                });
+            } else {
+                // Welcome message
+                const welcomeMsg = document.createElement('div');
+                welcomeMsg.className = 'message-micro ai-message';
+                welcomeMsg.innerHTML = `
+                    <div class="message-sender-micro">GaiCodeMaster AI</div>
+                    <p>🚀 Welcome to GaiCodeMaster AI!</p>
+                    <p>I'm your coding assistant. Select a language and use the tools below.</p>
+                    <div class="message-time-micro">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                `;
+                chatMessages.appendChild(welcomeMsg);
+            }
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Add message to chat
+        function addMessage(sender, text, timestamp) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message-micro ${sender === 'user' ? 'user-message' : 'ai-message'}`;
+            
+            const senderName = sender === 'user' ? 'You' : 'GaiCodeMaster AI';
+            const time = new Date(timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            // Simple formatting
+            let formattedText = text
+                .replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+                    return `<div class="code-micro"><pre><code>${code.trim()}</code></pre></div>`;
+                })
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                .replace(/\n/g, '<br>');
+            
+            messageElement.innerHTML = `
+                <div class="message-sender-micro">${senderName}</div>
+                <div>${formattedText}</div>
+                <div class="message-time-micro">${time}</div>
+            `;
+            
+            chatMessages.appendChild(messageElement);
+        }
+        
+        // Add system message
+        function addSystemMessage(text) {
+            const systemMessage = document.createElement('div');
+            systemMessage.className = 'message-micro ai-message';
+            systemMessage.style.alignSelf = 'center';
+            systemMessage.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+            systemMessage.style.fontSize = '10px';
+            systemMessage.innerHTML = `<div class="message-sender-micro">System</div>${text}`;
+            
+            chatMessages.appendChild(systemMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Typing indicator
+        function showTypingIndicator() {
+            const typing = document.createElement('div');
+            typing.className = 'typing-micro';
+            typing.id = 'typingIndicator';
+            typing.innerHTML = `
+                <div class="typing-dot-micro"></div>
+                <div class="typing-dot-micro"></div>
+                <div class="typing-dot-micro"></div>
+            `;
+            
+            chatMessages.appendChild(typing);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function removeTypingIndicator() {
+            const typing = document.getElementById('typingIndicator');
+            if (typing) typing.remove();
+        }
+        
+        // Save chat history
+        function saveChatHistory() {
+            if (chatHistory.length > 10) {
+                chatHistory = chatHistory.slice(0, 10);
+            }
+            localStorage.setItem('verticalChatHistory', JSON.stringify(chatHistory));
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
